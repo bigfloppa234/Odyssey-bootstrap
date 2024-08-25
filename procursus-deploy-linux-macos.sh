@@ -30,10 +30,6 @@ Press enter to continue.
 EOF
 read -r REPLY
 
-if ! which curl > /dev/null; then
-	echo "Error: cURL not found."
-	exit 1
-fi
 if [ "${ARM}" != yes ]; then
 	if ! which iproxy > /dev/null; then
 		echo "Error: iproxy not found."
@@ -47,7 +43,7 @@ echo '#!/bin/bash' > odysseyra1n-install.bash
 if [ ! "${ARM}" = yes ]; then
 	echo 'cd /var/root' >> odysseyra1n-install.bash
 fi
-cat << "EOF" >> odysseyra1n-install.bash
+cat << "EOF" >> /root/odysseyra1n-install.bash
 if [[ -f "/.bootstrapped" ]]; then
     echo "Error: Migration from other bootstraps is no longer supported."
     rm ./bootstrap* ./*.deb odysseyra1n-install.bash
@@ -105,11 +101,6 @@ EOF
 
 echo "(1) Downloading resources..."
 IPROXY=$(iproxy 28605 44 >/dev/null 2>&1 & echo $!)
-curl -sLOOOOO https://github.com/coolstar/Odyssey-bootstrap/raw/master/bootstrap_1500.tar.gz \
-	https://github.com/coolstar/Odyssey-bootstrap/raw/master/bootstrap_1600.tar.gz \
-	https://github.com/coolstar/Odyssey-bootstrap/raw/master/bootstrap_1700.tar.gz \
-	https://github.com/coolstar/Odyssey-bootstrap/raw/master/org.coolstar.sileo_2.3_iphoneos-arm.deb \
-	https://github.com/coolstar/Odyssey-bootstrap/raw/master/org.swift.libswift_5.0-electra2_iphoneos-arm.deb
 if [ ! "${ARM}" = yes ]; then
 	echo "(2) Copying resources to your device..."
 	echo "Default password is: alpine"
@@ -122,11 +113,12 @@ if [ ! "${ARM}" = yes ]; then
 		scp_opts="${scp_opts}O"
 	fi
 
-	scp "$scp_opts" -P28605 -o "StrictHostKeyChecking no" -o "UserKnownHostsFile=/dev/null" bootstrap_1500.tar.gz \
-		bootstrap_1600.tar.gz bootstrap_1700.tar.gz \
-		org.coolstar.sileo_2.3_iphoneos-arm.deb \
-		org.swift.libswift_5.0-electra2_iphoneos-arm.deb \
-		odysseyra1n-install.bash \
+	scp "$scp_opts" -P28605 -o "StrictHostKeyChecking no" -o "UserKnownHostsFile=/dev/null" /root/bootstrap_1500.tar.gz \
+		/root/bootstrap_1600.tar.gz \
+		/root/bootstrap_1700.tar.gz \
+		/root/org.coolstar.sileo_2.3_iphoneos-arm.deb \
+		/root/org.swift.libswift_5.0-electra2_iphoneos-arm.deb \
+		/root/odysseyra1n-install.bash \
 		root@127.0.0.1:/var/root/
 fi
 echo "(3) Bootstrapping your device..."
